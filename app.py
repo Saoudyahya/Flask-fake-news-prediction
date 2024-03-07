@@ -54,7 +54,7 @@ def clean_txt(txt):
   return text
 
 # loading the model
-model = keras.models.load_model("RNN_BIBI_LSTM128_LSTM64_len_sequ5000_w2vec_200dim_wind10_TFv2.16.0rc0.h5")
+model = keras.models.load_model("model/RNN_BIBI_LSTM128_LSTM64_len_sequ5000_w2vec_200dim_wind10_TFv2.16.0rc0.h5")
 
 # main function to predict
 def fake_or_real(new):

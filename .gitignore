@@ -1,3 +1,4 @@
 env/
+model/
 RNN_BIBI_LSTM128_LSTM64_len_sequ5000_w2vec_200dim_wind10_TFv2.16.0rc0.h5
 node_modules/
