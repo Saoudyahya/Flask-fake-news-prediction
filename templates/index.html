@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fake News Detector</title>
+    <link
+      href="{{url_for('static',filename='css/main.css')}}"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <!-- hero -->
+    <main
+      class="bg-black min-h-screen relative overflow-x-hidden text-zinc-100 p-12 max-sm:p-10"
+    >
+      <div
+        class="min-h-[calc(100vh-100px)] w-full relative text-center flex flex-col justify-center items-center"
+      >
+        <div
+          class="z-[5] w-full h-full fixed top-0 left-0 opacity-30"
+          style="background-image: url({{ url_for('static', filename='topography.svg') }});"
+        ></div>
+        <!-- <div class="z-[5] w-64 h-64 opacity-40 blur-[100px] bg-gradient-to-r from-violet-600 to-indigo-600 absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div> -->
+        <div
+          class="z-10 w-full text-center flex flex-col justify-center items-center sm:max-w-screen-md"
+        >
+          <h1
+            class="text-6xl sm:text-7xl mb-2 font-bold relative z-20 bg-clip-text text-transparent bg-gradient-to-b from-neutral-200 to-neutral-500"
+          >
+            Fake News Detector.
+          </h1>
+          <p class="text-sm">
+            This model utilizes cutting-edge technology to predict the
+            likelihood of information being fake news. By analyzing various
+            aspects of text, it empowers you to navigate the digital world with
+            confidence. Unmask deception and make informed decisions, one click
+            at a time.
+          </p>
+          <form
+            method="post"
+            id="form"
+            class="outline-none p-0 m-0 w-3/4 max-sm:w-[90%] bg-none"
+          >
+            <div class="relative mt-7 w-full">
+              <input
+                type="text"
+                placeholder="paste a news"
+                id="prompt"
+                name="prompt"
+                class="px-5 pr-9 py-3 w-full rounded-2xl outline-none placeholder:text-sm bg-zinc-800 focus:bg-zinc-800 border-2 border-zinc-700 focus:outline-2 focus:outline-zinc-700 focus:outline-offset-2"
+              />
+              <button type="submit" class="absolute right-2 top-0 h-full">
+                <?xml version="1.0" encoding="utf-8"?>
+                <svg
+                  width="27px"
+                  height="27px"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M11.5003 12H5.41872M5.24634 12.7972L4.24158 15.7986C3.69128 17.4424 3.41613 18.2643 3.61359 18.7704C3.78506 19.21 4.15335 19.5432 4.6078 19.6701C5.13111 19.8161 5.92151 19.4604 7.50231 18.7491L17.6367 14.1886C19.1797 13.4942 19.9512 13.1471 20.1896 12.6648C20.3968 12.2458 20.3968 11.7541 20.1896 11.3351C19.9512 10.8529 19.1797 10.5057 17.6367 9.81135L7.48483 5.24303C5.90879 4.53382 5.12078 4.17921 4.59799 4.32468C4.14397 4.45101 3.77572 4.78336 3.60365 5.22209C3.40551 5.72728 3.67772 6.54741 4.22215 8.18767L5.24829 11.2793C5.34179 11.561 5.38855 11.7019 5.407 11.8459C5.42338 11.9738 5.42321 12.1032 5.40651 12.231C5.38768 12.375 5.34057 12.5157 5.24634 12.7972Z"
+                    stroke="#cdcdcd"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                  />
+                </svg>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        <!-- Answer -->
+        <div
+          class="z-10 w-full text-center flex flex-col relative after:absolute after:top-0 after:left-0 after:w-full after:h-full after:bg-gradient-to-t after:from-[#0000009e] after:to-transparent justify-center p-5 items-center sm:max-w-screen-md"
+        >
+          <p
+            class="text-zinc-400 text-sm transition-all duration-700"
+            id="provided-text"
+          ></p>
+        </div>
+        <div class="mt-2 flex flex-col justify-center items-center z-10">
+          <!-- spinner -->
+          <div
+            id="spinner"
+            class="hidden items-center animate-spin justify-center h-10 w-10"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="40px"
+              height="40px"
+              viewBox="0 0 24 24"
+              fill="none"
+            >
+              <path
+                d="M12 22C17.5228 22 22 17.5228 22 12H19C19 15.866 15.866 19 12 19V22Z"
+                fill="#fff"
+              />
+              <path
+                d="M2 12C2 6.47715 6.47715 2 12 2V5C8.13401 5 5 8.13401 5 12H2Z"
+                fill="#fff"
+              />
+            </svg>
+          </div>
+          <p id="result" class="font-semibold"></p>
+        </div>
+      </div>
+
+      <div
+        class="absolute bottom-5 left-1/2 flex flex-col justify-center items-center -translate-x-1/2"
+      >
+        <p class="text-sm flex text-zinc-500">
+          These predictions are based on our model
+          analysis of text and should not be interpreted as absolute truths
+        </p>
+      </div>
+    </main>
+
+    <script>
+      const input = document.getElementById("prompt");
+      const form = document.getElementById("form");
+      const providedText = document.getElementById("provided-text");
+      const result = document.getElementById("result");
+      const spinner = document.getElementById("spinner");
+
+      form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        const data = new FormData(form);
+        providedText.textContent = data.get("prompt").slice(0, 200) + "...";
+        // spinner
+        spinner.classList.remove("hidden");
+        spinner.classList.add("flex");
+
+        result.textContent = "";
+
+        const response = fetch("/predict", {
+          method: "POST",
+          body: data,
+        })
+          .then((response) =>
+            response.json().then((data) => {
+              console.log(data);
+              spinner.classList.remove("flex");
+              spinner.classList.add("hidden");
+              result.textContent = data.prediction;
+            })
+          )
+          .catch((error) => {
+            console.log(error);
+            spinner.classList.remove("flex");
+            spinner.classList.add("hidden");
+            result.textContent = error.message;
+            result.style.color = "red";
+          });
+      });
+    </script>
+  </body>
+</html>

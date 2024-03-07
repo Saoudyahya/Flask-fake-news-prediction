@@ -4,13 +4,13 @@ from tensorflow import keras
 import re
 import nltk
 from nltk.corpus import stopwords
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 from nltk.stem import WordNetLemmatizer
+from tensorflow import keras
 
 app = Flask(__name__, static_url_path='/static', static_folder='static')
 
 # preprocess functions
-
 
 nltk.download("stopwords")
 nltk.download('wordnet')
@@ -31,7 +31,7 @@ def pre_process(txt):
       lemmatized_text.append(tmp)
   return lemmatized_text
 
-###
+# ###
 def clean_txt(txt):
   text = re.sub('u.s.', 'united state', txt)
   text = re.sub('U.S.', 'united state', txt)
@@ -54,8 +54,7 @@ def clean_txt(txt):
   return text
 
 # loading the model
-
-model =  keras.models.load_model("RNN_BIBI_LSTM128_LSTM64_len_sequ5000_w2vec_200dim_wind10.h5")
+model = keras.models.load_model("RNN_BIBI_LSTM128_LSTM64_len_sequ5000_w2vec_200dim_wind10_TFv2.16.0rc0.h5")
 
 # main function to predict
 def fake_or_real(new):
@@ -72,12 +71,23 @@ def fake_or_real(new):
   else:
     return "The new is fake : {:.2f} %".format((1 - pred[0][0])*100)
 
-
-
 @app.route('/')
+def index():
+    # ... (initial setup) ...
+    return render_template('index.html')
+
+@app.route('/predict', methods=['POST'])
 def predict():
-   
-    return fake_or_real("yahya os ssss")
+    # Initialize an empty string for the user's input
+    user_input = ""
+    prediction = ""
+
+    # Check if there's a "prompt" parameter in the request
+    if request.method == 'POST':
+        user_input = request.form['prompt']
+        prediction = fake_or_real(user_input)
+
+    return jsonify({"user_input": user_input, "prediction": prediction, "status": "OK"})
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
