@@ -15,7 +15,7 @@ COPY . .
 RUN npm run create-css
 
 # Use the official Python image as the base image
-FROM python:3.10.12-slim
+FROM python:3.10.11-slim
 
 # Set environment variables
 ENV PYTHONDONTWRITEBYTECODE 1
@@ -25,7 +25,7 @@ ENV PYTHONUNBUFFERED 1
 WORKDIR /app
 
 # Install any dependencies specified in requirements.txt
-RUN pip install --no-cache-dir flask tensorflow nltk
+RUN pip install --no-cache-dir flask tensorflow==2.13.0 nltk
 
 # Copy the current directory contents into the container at /app
 COPY . /app
@@ -34,4 +34,4 @@ COPY . /app
 EXPOSE 5000
 
 # Run the Flask application
-CMD ["python", "app.py"]
+CMD ["python3", "app.py"]
